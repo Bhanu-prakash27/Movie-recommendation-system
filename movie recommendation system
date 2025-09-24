@@ -1,0 +1,55 @@
+import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
+
+
+# Load movie ratings dataset
+movies = pd.read_csv('movies.csv')
+ratings = pd.read_csv('ratings.csv')
+
+
+# Create a matrix of users and their movie ratings where rows are userId and
+#columns are movieId if not given rating fill with 0;
+user_movie_matrix = ratings.pivot_table(index='userId', columns='movieId', values='rating').fillna(0)
+
+
+# Compute the similarity matrix using cosine similarity for finding similar user
+similarity_matrix = cosine_similarity(user_movie_matrix)
+
+
+#Get movie recommendations for a user (e.g., userId = 1)
+user_idx = 1
+similar_users = similarity_matrix[user_idx]
+# Top 5 similar users
+top_users = similar_users.argsort()[::-1][1:6]
+
+
+#select only top users row find the mean of ratings and select top 5 movies from mean
+recommended_movies = user_movie_matrix.iloc[top_users].mean().sort_values(ascending=False).head(5)
+
+
+print('recommended movies based on the user 1 watchlist rating')
+#recommended_movies is a series it consist movieId as index so to get that column
+recommended_movieId = recommended_movies.index
+# Merge the movieIds with the movies dataframe to get movie titles
+recommended_movies_with_titles = pd.merge(pd.DataFrame({'movieId': recommended_movieId}), movies, on='movieId')
+#to only get movieId and title
+print(recommended_movies_with_titles[['movieId', 'title']])
+
+
+#print movies Based on genre
+genre = input('enter the genre you want to see :')
+genre_filtered_data = movies[movies['genres'].str.contains(genre)]
+print("the 10 movies recommended for that %s movies is:"%(genre))
+print(genre_filtered_data['title'].head(10))
+
+
+#highest rated required genre movie
+required_movieId = genre_filtered_data['movieId']
+#to get ratings of required movieId of genre
+ratings_required_movieId = ratings[ratings['movieId'].isin(required_movieId)]
+#to group differ movieId based on ratings and get top 5 rated movie
+top5_movieId =ratings_required_movieId.groupby('movieId')['rating'].mean().sort_values(ascending=False).head(5)
+print('highest rated %s movies are'%(genre))
+#Get movie titles along with movieId for top5 tating required genre
+rec_genre_with_titles = pd.merge(pd.DataFrame({'movieId': top5_movieId.index}), movies, on='movieId')
+print(rec_genre_with_titles[['movieId', 'title']])
