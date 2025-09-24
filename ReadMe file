@@ -1,0 +1,31 @@
+# 🎬 Movie Recommendation System
+
+This project implements a **Movie Recommendation System** using **collaborative filtering** and **content-based filtering** techniques.  
+It is based on the popular **MovieLens dataset** (movies.csv and ratings.csv).
+
+---
+
+## 🚀 Features
+1. **User-based Collaborative Filtering**
+   - Uses **cosine similarity** to find similar users.
+   - Recommends movies based on ratings of the most similar users.
+   - Filters out movies that the target user has already rated.
+
+2. **Genre-based Movie Suggestions**
+   - Lets the user enter a genre (e.g., `Comedy`, `Action`).
+   - Displays the top 10 movies that belong to that genre.
+
+3. **Top-rated Movies by Genre**
+   - Finds movies of a given genre with the **highest average ratings**.
+   - Displays the **Top 5 highest-rated movies** in that genre.
+
+---
+
+## 🛠️ Requirements
+- Python 3.x
+- Pandas
+- scikit-learn
+
+Install dependencies:
+```bash
+pip install pandas scikit-learn
